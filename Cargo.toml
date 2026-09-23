@@ -1,0 +1,51 @@
+[package]
+name = "leetcode-compass"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+description = "A LeetCode learning companion desktop app written in Rust"
+license = "MIT"
+
+[dependencies]
+# GUI
+eframe = { version = "0.36.2", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+egui = "0.36.2"
+
+# Async runtime
+tokio = { version = "1.53.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+
+# HTTP
+# TLS 后端选择说明：`rustls` feature 默认拉入 `aws-lc-rs` 加密后端，
+# 后者需要 CMake + NASM + MSVC 编译 C/汇编代码，在部分 Windows 环境下
+# 构建失败（实测报 aws-lc-sys 编译错误）。
+# 因此显式使用 `rustls-no-provider` 关闭默认后端，改由 ring 提供加密实现。
+# ring 的加密原语已预编译，无需外部工具链，构建稳定。
+#
+# 重要：`rustls-no-provider` 意味着**没有任何默认加密后端**。
+# 必须在进程内显式 `install_default()`，否则首次构造 reqwest::Client 时
+# 会 panic（"No rustls crypto provider is configured"）。
+# 因此这里把 rustls（ring 后端）作为直接依赖引入，见 `error.rs::install_crypto_provider`。
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "cookies", "rustls-no-provider", "gzip", "charset", "http2"] }
+rustls = { version = "0.23.45", default-features = false, features = ["ring", "std", "tls12"] }
+
+# Serialization
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+
+# Storage
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+
+# Error handling
+anyhow = "1.0.104"
+thiserror = "2.0.20"
+
+# Utils
+chrono = { version = "0.4.45", features = ["serde"] }
+open = "5.4.4"
+egui_commonmark = { version = "0.25", default-features = false, features = ["pulldown_cmark"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true

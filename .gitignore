@@ -1,0 +1,38 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# 依赖目录
+node_modules/
+__pycache__/
+venv/
+.venv/
+
+# 构建产物
+dist/
+build/
+*.log
+target/
+
+# 环境变量 / 敏感文件
+.env
+.env.local
+.env.*.local
+
+# 凭证与密钥
+*.pem
+*.key
+*.pfx
+id_rsa*
+
+packaging/
+.git
+.workbuddy-ai/
+plan.md
+UI_SPEC.md
+AUDIT.md
